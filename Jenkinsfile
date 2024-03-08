@@ -21,7 +21,7 @@ pipeline {
     }
     stage('Push to Amazon ECR') {
       steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'your-aws-credentials-id', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: $AWS_ACCESS_KEY_ID, secretKeyVariable: $AWS_SECRET_ACCESS_KEY]]) {
           sh "aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO"
           sh "docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_REPO:$IMAGE_TAG"
           sh "docker push $ECR_REPO:$IMAGE_TAG"
