@@ -4,8 +4,8 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   environment {
-    AWS_ACCESS_KEY_ID     = credentials('AKIAQDHXUUXG5FVPDGOX')
-    AWS_SECRET_ACCESS_KEY = credentials('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')
+    AWS_ACCESS_KEY_ID     = 'AKIAQDHXUUXG5FVPDGOX'
+    AWS_SECRET_ACCESS_KEY = 'Bo+Htukxd0v3UADdLqRDx4QKD5cATjbGdv7uI2U0'
     AWS_DEFAULT_REGION    = 'us-east-1'
     IMAGE_NAME            = 'yellwinhtut/jenkins-example-laravel'
     IMAGE_TAG             = 'latest'
