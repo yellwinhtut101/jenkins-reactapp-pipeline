@@ -4,10 +4,14 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   environment {
-    HEROKU_API_KEY = credentials('heroku-api-key')
-    IMAGE_NAME = 'darinpope/jenkins-example-react'
-    IMAGE_TAG = 'latest'
-    APP_NAME = 'jenkins-example-react'
+    AWS_ACCESS_KEY_ID     = credentials('AKIAQDHXUUXG5FVPDGOX')
+    AWS_SECRET_ACCESS_KEY = credentials('Bo+Htukxd0v3UADdLqRDx4QKD5cATjbGdv7uI2U0')
+    AWS_DEFAULT_REGION    = 'us-east-1'
+    IMAGE_NAME            = 'yellwinhtut/jenkins-example-laravel'
+    IMAGE_TAG             = 'latest'
+    ECR_REPO              = 'public.ecr.aws/v0n2c9p8/y3ll-lab'
+    EC2_INSTANCE_IP       = '54.80.70.193'
+    // SSH_CREDENTIALS       = credentials('your-ssh-credentials')
   }
   stages {
     stage('Build') {
@@ -15,24 +19,13 @@ pipeline {
         sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
       }
     }
-    stage('Login') {
+    stage('Push to Amazon ECR') {
       steps {
-        sh 'echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com'
-      }
-    }
-    stage('Push to Heroku registry') {
-      steps {
-        sh '''
-          docker tag $IMAGE_NAME:$IMAGE_TAG registry.heroku.com/$APP_NAME/web
-          docker push registry.heroku.com/$APP_NAME/web
-        '''
-      }
-    }
-    stage('Release the image') {
-      steps {
-        sh '''
-          heroku container:release web --app=$APP_NAME
-        '''
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'your-aws-credentials-id', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+          sh "aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO"
+          sh "docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_REPO:$IMAGE_TAG"
+          sh "docker push $ECR_REPO:$IMAGE_TAG"
+        }
       }
     }
   }
