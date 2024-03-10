@@ -8,7 +8,7 @@ pipeline {
     AWS_DEFAULT_REGION    = 'us-east-1'
     IMAGE_NAME            = 'yellwinhtut/jenkins-example-react'
     IMAGE_TAG             = 'latest'
-    ECR_REPO              = 'https://006961800653.public.ecr.us-east-1.amazonaws.com/v0n2c9p8/y3ll-lab'
+    ECR_REPO              = 'https://gallery.ecr.aws/v0n2c9p8/y3ll-lab'
     EC2_INSTANCE_IP       = '54.80.70.193'
     // SSH_CREDENTIALS       = credentials('your-ssh-credentials')
   }
@@ -25,7 +25,7 @@ pipeline {
     }
     stage('Push to Amazon ECR') {
       steps {
-          sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin 006961800653.public.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
+          sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}"""
           sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}"
           sh "docker push ${ECR_REPO}:${IMAGE_TAG}"
       }
