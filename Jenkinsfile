@@ -4,10 +4,9 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   environment {
-    AWS_ACCESS_KEY_ID     = 'AKIAQDHXUUXG5FVPDGOX'
-    AWS_SECRET_ACCESS_KEY = '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'
+    AN_ACCESS_KEY = credentials('ywh-credentials')
     AWS_DEFAULT_REGION    = 'us-east-1'
-    IMAGE_NAME            = 'yellwinhtut/jenkins-example-laravel'
+    IMAGE_NAME            = 'yellwinhtut/jenkins-example-react'
     IMAGE_TAG             = 'latest'
     ECR_REPO              = 'public.ecr.aws/v0n2c9p8/y3ll-lab'
     EC2_INSTANCE_IP       = '54.80.70.193'
@@ -21,11 +20,9 @@ pipeline {
     }
     stage('Push to Amazon ECR') {
       steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AKIAQDHXUUXG5FVPDGOX', secretKeyVariable: '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']]) {
           sh "aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO"
           sh "docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_REPO:$IMAGE_TAG"
           sh "docker push $ECR_REPO:$IMAGE_TAG"
-        }
       }
     }
   }
